@@ -127,8 +127,8 @@ services:
     ports:
       - "8082:8080"
     volumes:
-      - ./trino-coordinator-config:/etc/trino
-      - ./trino-catalog:/etc/trino/catalog
+      - ./docker/trino-coordinator-config:/etc/trino
+      - ./docker/trino-catalog:/etc/trino/catalog
     environment:
       - TRINO_NODE_ID=coordinator
     networks:
@@ -141,7 +141,7 @@ services:
     depends_on:
       - trino-coordinator
     volumes:
-      - ./trino-worker-config:/etc/trino
+      - ./docker/trino-worker-config:/etc/trino
     environment:
       - TRINO_NODE_ID=worker
     networks:
