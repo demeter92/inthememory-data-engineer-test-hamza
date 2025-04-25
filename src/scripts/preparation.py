@@ -19,7 +19,7 @@ schema = StructType([
 df =  (spark.read.format("csv")
     .option("header", "true")
     .schema(schema)
-    .load("file:///app/shared_storage/data/mnm_dataset.csv"))
+    .load("file:///app/shared_storage/test_data/mnm_dataset.csv"))
 
 
 df_count = (df
