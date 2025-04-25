@@ -1,6 +1,6 @@
 FROM apache/spark:3.5.5
 
-WORKDIR /app/shared_storage
+WORKDIR /app/src
 USER root
 
 RUN apt-get -o Acquire::Check-Valid-Until=false update -y \
@@ -36,7 +36,7 @@ COPY requirements.txt .
 RUN git config --global http.sslVerify false \
     && pip install -r requirements.txt
 
-ENV PYTHONPATH="./shared_storage:${PYTHONPATH}"
+ENV PYTHONPATH="./src:./shared_storage:${PYTHONPATH}"
 
 CMD sleep infinity
 

@@ -78,6 +78,7 @@ services:
       spark_network:
     volumes:
       - ./shared_storage:/app/shared_storage
+      - ./src:/app/src
       - ./cache:/root/.ivy2/cache
     ports:
       - 4044:4040

@@ -2,6 +2,7 @@ from pyspark.sql import SparkSession
 from config.spark_config import conf
 from pyspark.sql import functions as F
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType, DoubleType
+import ipdb
 spark = (SparkSession.builder 
     .master("spark://spark-master:7077") 
     .appName("preparation") 
@@ -27,5 +28,6 @@ df_count = (df
             .sum("Count")
             .orderBy("sum(Count)", ascending=False)
             )
+ipdb.set_trace()
 
-
+df_count.show(truncate=False)

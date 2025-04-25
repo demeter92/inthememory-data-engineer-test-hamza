@@ -33,3 +33,4 @@ spark_session.sql("""
 """)
 
 spark_session.sql("SELECT * FROM hive_prod.db.employees").show()
+ipdb.set_trace()
