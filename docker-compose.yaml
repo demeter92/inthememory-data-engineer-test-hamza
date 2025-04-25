@@ -1,0 +1,154 @@
+networks:
+  spark_network:
+    name: spark_network
+    driver: bridge
+
+services:
+
+  spark-master:
+    build: ./docker/spark
+    container_name: spark-master
+    hostname: spark-master
+    restart: unless-stopped
+    networks:
+      spark_network:
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    command: sh /spark-master.sh
+    ports:
+      - "8090:8080" # Spark Web UI
+      - "7077:7077" # Spark Master Port
+      - "4040:4040"
+      - "18080:18080"
+
+  spark-worker:
+    build: ./docker/spark
+    hostname: spark-worker
+    restart: unless-stopped
+    networks:
+      spark_network:
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=4G
+      - SPARK_WORKER_CORES=2
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    deploy:
+      replicas: 2
+    command: sh /spark-worker.sh
+    volumes:
+      - ./shared_storage:/app/shared_storage
+    depends_on:
+      - spark-master
+
+  minio:
+    image: minio/minio:RELEASE.2025-01-20T14-49-07Z-cpuv1
+    container_name: minio
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: admin123
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      - spark_network
+    volumes:
+      - minio_data:/data
+    command: [ "server", "/data", "--console-address", ":9001" ]
+
+  mc:
+    image: minio/mc:RELEASE.2023-07-21T20-44-27Z
+    depends_on:
+      - minio
+    networks:
+      - spark_network
+    entrypoint: >
+      /bin/sh -c " until (/usr/bin/mc config host add minio http://minio:9000 admin admin123) do echo '...waiting...' && sleep 1; done;  /usr/bin/mc mb minio/iceberg; /usr/bin/mc policy set public minio/iceberg; tail -f /dev/null "
+  spark-driver:
+    build: ./docker/spark-driver
+    container_name: spark-driver
+    networks:
+      spark_network:
+    volumes:
+      - ./shared_storage:/app/shared_storage
+      - ./src:/app/src
+      - ./cache:/root/.ivy2/cache
+    ports:
+      - 4044:4040
+
+  postgres:
+    image: postgres:13
+    restart: unless-stopped
+    container_name: postgres
+    hostname: postgres
+    environment:
+      POSTGRES_DB: 'metastore_db'
+      POSTGRES_USER: 'hive'
+      POSTGRES_PASSWORD: 'password'
+    ports:
+      - '5432:5432'
+    volumes:
+      - hive-db:/var/lib/postgresql
+    networks:
+      spark_network:
+
+
+  metastore:
+    build: ./docker/metastore
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    container_name: metastore
+    hostname: metastore
+    environment:
+      DB_DRIVER: postgres
+      SERVICE_NAME: 'metastore'
+      SERVICE_OPTS: '-Xmx1G -Djavax.jdo.option.ConnectionDriverName=org.postgresql.Driver -Djavax.jdo.option.ConnectionURL=jdbc:postgresql://postgres:5432/metastore_db -Djavax.jdo.option.ConnectionUserName=hive -Djavax.jdo.option.ConnectionPassword=password'
+      S3_ENDPOINT: http://minio:9000
+      S3_PATH_STYLE_ACCESS: "true"
+    ports:
+      - '9083:9083'
+    volumes:
+      - warehouse:/opt/hive/data/warehouse
+    networks:
+      spark_network:
+
+
+  trino-coordinator:
+    image: trinodb/trino:472
+    container_name: trino-coordinator
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./docker/trino-coordinator-config:/etc/trino
+      - ./docker/trino-catalog:/etc/trino/catalog
+    environment:
+      - TRINO_NODE_ID=coordinator
+    networks:
+      spark_network:
+    entrypoint: [ "/usr/lib/trino/bin/run-trino" ]
+
+  trino-worker:
+    image: trinodb/trino:472
+    container_name: trino-worker
+    depends_on:
+      - trino-coordinator
+    volumes:
+      - ./docker/trino-worker-config:/etc/trino
+    environment:
+      - TRINO_NODE_ID=worker
+    networks:
+      spark_network:
+    entrypoint: [ "/usr/lib/trino/bin/run-trino" ]
+
+volumes:
+  minio_data:
+  hive-db:
+  warehouse:
