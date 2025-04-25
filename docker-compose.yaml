@@ -71,9 +71,9 @@ services:
       - spark_network
     entrypoint: >
       /bin/sh -c " until (/usr/bin/mc config host add minio http://minio:9000 admin admin123) do echo '...waiting...' && sleep 1; done;  /usr/bin/mc mb minio/iceberg; /usr/bin/mc policy set public minio/iceberg; tail -f /dev/null "
-  tool:
-    build: ./docker/tool
-    container_name: tool
+  spark-driver:
+    build: ./docker/spark-driver
+    container_name: spark-driver
     networks:
       spark_network:
     volumes:
