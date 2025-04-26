@@ -20,7 +20,7 @@ products_df = (spark.read.format("csv")
     .load(prodcuts_file_path))
 
 #se debarasser des duplicates si elle existe
-products_df = products_df.dropDuplicates(["ean","id"])
+products_df = products_df.dropDuplicates()
 
 #crer la DB si elle n'existe pas 
 spark.sql("CREATE DATABASE IF NOT EXISTS hive_prod.db")

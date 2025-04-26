@@ -35,7 +35,7 @@ stores_df = (stores_df.withColumn("lat", F.col("latlng_struct.lat"))
 
 
 #se debarasser des duplicates si elle existe
-stores_df = stores_df.dropDuplicates(["id"])
+stores_df = stores_df.dropDuplicates()
 
 #crer la DB si elle n'existe pas 
 spark.sql("CREATE DATABASE IF NOT EXISTS hive_prod.db")

@@ -20,7 +20,7 @@ clients_df = (spark.read.format("csv")
 
 #se debarasser des duplicates si elle existe
 #l'id seul ne suffit pas pour identifier un client, il faut aussi nom
-clients_df = clients_df.dropDuplicates(["id","name"])
+clients_df = clients_df.dropDuplicates()
 
 
 
