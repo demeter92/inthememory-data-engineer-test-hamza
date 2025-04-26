@@ -14,3 +14,12 @@ Problems when handling transactions table :
 
 Added column :
 I added the file ingestion_ts for the needs of the audit
+
+
+
+If you want to test the ingest_transactions_daily.py : 
+you can comment the line :
+today_str = datetime.today().strftime("%Y-%m-%d")
+And decomment the line
+today_str = "2023-11-25"  #for testing purposes
+As we have data for the date 2023-11-25
