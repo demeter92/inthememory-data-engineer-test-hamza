@@ -12,7 +12,7 @@ spark = (SparkSession.builder
 clients_file_path = "file:///app/shared_storage/data/clients.csv"
 
 
-clients_df = (spark.read.format("csv") \
+clients_df = (spark.read.format("csv") 
     .option("header", True) 
     .option("sep", ";") 
     .schema(schema)

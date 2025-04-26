@@ -13,7 +13,7 @@ prodcuts_file_path = "file:///app/shared_storage/data/products.csv"
 
 
 
-products_df = (spark.read.format("csv") \
+products_df = (spark.read.format("csv") 
     .option("header", True) 
     .option("sep", ";") 
     .schema(schema)
