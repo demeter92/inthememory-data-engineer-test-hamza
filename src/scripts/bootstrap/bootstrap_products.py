@@ -1,6 +1,6 @@
 from pyspark.sql import SparkSession
 from config.spark_config import conf
-from scripts.schemas.schema_products import schema_prodcuts as schema
+from scripts.schemas.schema_products import schema_products as schema
 
 
 spark = (SparkSession.builder 
