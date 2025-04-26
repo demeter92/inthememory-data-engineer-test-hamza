@@ -10,7 +10,6 @@ __pycache__/
 # Distribution / packaging
 .vscode/
 cache/
-trino.*
 .Python
 build/
 develop-eggs/

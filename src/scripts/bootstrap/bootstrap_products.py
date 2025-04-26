@@ -1,6 +1,6 @@
 from pyspark.sql import SparkSession
 from config.spark_config import conf
-from pyspark.sql.types import StructType, StructField, StringType
+from scripts.schemas.schema_products import schema_prodcuts as schema
 
 
 spark = (SparkSession.builder 
@@ -10,14 +10,7 @@ spark = (SparkSession.builder
     .getOrCreate())
 
 prodcuts_file_path = "file:///app/shared_storage/data/products.csv"
-#je prefere string pour id et ean si jamais il existe des 00 au debut comme le cas de sirene
-#je considere que l'id et l'ean ne peuvent pas etre null
-schema = StructType([      
-    StructField("id", StringType(), False),
-    StructField("ean", StringType(), False),
-    StructField("brand", StringType(), True),
-    StructField("description", StringType(), True)
-])
+
 
 
 products_df = (spark.read.format("csv") \
