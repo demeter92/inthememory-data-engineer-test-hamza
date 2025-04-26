@@ -5,13 +5,12 @@ In case of problemen when running spark  linked to the syntax of the files spark
 please make sure tthe end line is LF and not CRLF. It may cause problem.
 
 
-Voila un exemple de requete trino sur un table iceberg :
-SELECT * from iceberg.db.products;
-SELECT count(*) from iceberg.db.products;
-SELECT * FROM iceberg.db."products$manifests";
-SELECT * from iceberg.db."products$properties";
-SELECT * from iceberg.db."products$history";
-SELECT * FROM iceberg.db."products$snapshots"; 
-SELECT * FROM iceberg.db."products$files"; 
+Problems when handling transactions table :
+- Comments on some input files starting with #
+- The id of client was not unique so duplicates in table transactions avec la jointure (26 transactions concernés)
+- Sometimes the date was not good so i make sure to get the date from the file name
+- This was a problem on my side about a regex which made not get the date in some files
 
-SELECT * FROM iceberg.db.products FOR TIMESTAMP AS OF TIMESTAMP '2025-04-26 :59:29.803 Europe/Paris';
+
+Added column :
+I added the file ingestion_ts for the needs of the audit
