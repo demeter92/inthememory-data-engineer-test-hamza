@@ -1,5 +1,4 @@
 
-src/scripts/poc/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -177,3 +176,5 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+src/scripts/poc/
+src/scripts/compare_to_output/
