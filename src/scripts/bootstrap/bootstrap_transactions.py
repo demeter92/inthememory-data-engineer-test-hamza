@@ -41,7 +41,6 @@ transactions_df = transactions_df.withColumn(
 transactions_df = transactions_df.withColumn(
     "date",  F.to_date(F.col("extracted_date"), "yyyy-MM-dd") 
 )
-transactions_df.filter(F.col("date").isNull()).head()
 # Drop the helper columns
 transactions_df = transactions_df.drop("file_name", "extracted_date")
 
