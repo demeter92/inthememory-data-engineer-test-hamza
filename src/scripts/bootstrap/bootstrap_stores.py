@@ -38,6 +38,10 @@ stores_df = (stores_df.withColumn("lat", F.col("latlng_struct.lat"))
 #se debarasser des duplicates si elle existe
 stores_df = stores_df.dropDuplicates()
 
+#####Ajouter ingestion_ts + extraire les colonnes de partition date_yyyy_mm_dd et hour pour les besoins d'audit
+stores_df = stores_df.withColumn(
+    "ingestion_ts", F.current_timestamp()
+)
 #crer la DB si elle n'existe pas 
 spark.sql("CREATE DATABASE IF NOT EXISTS hive_prod.db")
 
@@ -49,7 +53,9 @@ spark.sql("""
         lng INTEGER,
         opening INTEGER,
         closing INTEGER,
-        type INTEGER
+        type INTEGER,
+        ingestion_ts TIMESTAMP
+
     )
     USING iceberg
 """)

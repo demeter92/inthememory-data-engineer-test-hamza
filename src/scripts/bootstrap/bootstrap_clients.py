@@ -2,6 +2,7 @@ from pyspark.sql import SparkSession
 from config.spark_config import conf
 from scripts.schemas.schema_clients import schema_clients as schema
 from config.spark_config import ACCOUNT_NAME,CONTAINER_NAME
+from pyspark.sql import functions as F
 
 
 
@@ -24,7 +25,10 @@ clients_df = (spark.read.format("csv")
 #deux clients se sont perdus car id dupliqué 
 clients_df = clients_df.dropDuplicates(['id'])
 
-
+#####Ajouter ingestion_ts + extraire les colonnes de partition date_yyyy_mm_dd et hour pour les besoins d'audit
+clients_df = clients_df.withColumn(
+    "ingestion_ts", F.current_timestamp()
+)
 
 #crer la DB si elle n'existe pas 
 spark.sql("CREATE DATABASE IF NOT EXISTS hive_prod.db")
@@ -36,7 +40,8 @@ spark.sql("""
         name STRING,
         job STRING,
         email STRING,
-        account_id STRING
+        account_id STRING,
+        ingestion_ts TIMESTAMP
     )
     USING iceberg
 """)
