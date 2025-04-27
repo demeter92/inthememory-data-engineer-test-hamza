@@ -2,6 +2,7 @@ from pyspark.sql import SparkSession
 from config.spark_config import conf
 from pyspark.sql import functions as F
 from scripts.schemas.schema_stores import schema_stores as schema
+from config.spark_config import ACCOUNT_NAME,CONTAINER_NAME
 
 
 spark = (SparkSession.builder 
@@ -9,14 +10,14 @@ spark = (SparkSession.builder
     .appName("bootstrap_stores") 
     .config(conf=conf) 
     .getOrCreate())
+stores_file_path = f"wasbs://{CONTAINER_NAME}@{ACCOUNT_NAME}.blob.core.windows.net/stores.csv"
 
-prodcuts_file_path = "file:///app/shared_storage/data/stores.csv"
 
 stores_df = (spark.read.format("csv") 
     .option("header", True) 
     .option("sep", ";") 
     .schema(schema)
-    .load(prodcuts_file_path))
+    .load(stores_file_path))
 
 
 # Remove parentheses, split by comma, and cast to Float (convert the column to a struct)

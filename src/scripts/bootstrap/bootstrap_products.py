@@ -1,6 +1,7 @@
 from pyspark.sql import SparkSession
 from config.spark_config import conf
 from scripts.schemas.schema_products import schema_products as schema
+from config.spark_config import ACCOUNT_NAME,CONTAINER_NAME
 
 
 spark = (SparkSession.builder 
@@ -9,8 +10,7 @@ spark = (SparkSession.builder
     .config(conf=conf) 
     .getOrCreate())
 
-prodcuts_file_path = "file:///app/shared_storage/data/products.csv"
-
+prodcuts_file_path = f"wasbs://{CONTAINER_NAME}@{ACCOUNT_NAME}.blob.core.windows.net/products.csv"
 
 
 products_df = (spark.read.format("csv") 

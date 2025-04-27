@@ -175,5 +175,5 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
-src/scripts/poc/
 src/scripts/compare_to_output/
+shared_storage/data/

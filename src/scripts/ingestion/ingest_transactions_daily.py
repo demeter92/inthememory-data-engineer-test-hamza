@@ -4,7 +4,7 @@ from pyspark.sql import SparkSession
 from config.spark_config import conf
 from pyspark.sql import functions as F
 from scripts.schemas.schema_transactions import schema_transactions as schema
-from scripts.utils.match_transactions_files import list_matching_transaction_files
+from scripts.utils.match_transactions_files import list_matching_transaction_files_azure
 from pyspark.sql.utils import AnalysisException
 from datetime import datetime
 from pyspark.sql.functions import current_timestamp
@@ -18,12 +18,12 @@ logger = logging.getLogger("spark-warning")
 # the date of today as a string in the format YYYY-MM-DD
 ###that would be the official
 today_str = datetime.today().strftime("%Y-%m-%d")
-#today_str = "2023-11-25"  #for testing purposes
 
 
 #read transactions of the day from the shared storage
-transactions_full_path = list_matching_transaction_files(base_path="/app/shared_storage/data/",date=today_str)
-
+transactions_full_path = list_matching_transaction_files_azure()
+#transactions_full_path = list_matching_transaction_files_azure(date="2023-11-25") #for testing
+#transactions_full_path = list_matching_transaction_files_azure(date="2023-11-25",hour="8") # fir testing
 if not transactions_full_path:
     logger.error(f"No transactions files found for today {today_str}.")
     raise FileNotFoundError(f"No transactions files found for today {today_str}.")

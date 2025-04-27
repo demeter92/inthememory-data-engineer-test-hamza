@@ -4,7 +4,7 @@ from pyspark.sql import SparkSession
 from config.spark_config import conf
 from pyspark.sql import functions as F
 from scripts.schemas.schema_transactions import schema_transactions as schema
-from scripts.utils.match_transactions_files import list_matching_transaction_files
+from scripts.utils.match_transactions_files import  list_matching_transaction_files_azure
 from pyspark.sql.utils import AnalysisException
 
 
@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("spark-warning")
 
 #read all transactions files from the shared storage
-transactions_full_path = list_matching_transaction_files(base_path="/app/shared_storage/data/")
+transactions_full_path = list_matching_transaction_files_azure()
 
 spark = (SparkSession.builder 
     .master("spark://spark-master:7077") 
