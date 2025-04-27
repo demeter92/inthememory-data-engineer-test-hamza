@@ -1,4 +1,4 @@
-select * from iceberg.db.transactions;
+select * from iceberg.db.transactions limit 10;
 select count(*) from iceberg.db.transactions;
 
 
