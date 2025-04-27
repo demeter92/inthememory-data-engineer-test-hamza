@@ -1,6 +1,9 @@
 from pyspark.sql import SparkSession
 from config.spark_config import conf
 from scripts.schemas.schema_clients import schema_clients as schema
+from config.spark_config import ACCOUNT_NAME,CONTAINER_NAME
+
+
 
 spark = (SparkSession.builder 
     .master("spark://spark-master:7077") 
@@ -8,8 +11,7 @@ spark = (SparkSession.builder
     .config(conf=conf) 
     .getOrCreate())
 
-
-clients_file_path = "file:///app/shared_storage/data/clients.csv"
+clients_file_path = f"wasbs://{CONTAINER_NAME}@{ACCOUNT_NAME}.blob.core.windows.net/clients.csv"
 
 
 clients_df = (spark.read.format("csv") 
