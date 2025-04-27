@@ -2,6 +2,7 @@ from pyspark.sql import SparkSession
 from config.spark_config import conf
 from scripts.schemas.schema_products import schema_products as schema
 from config.spark_config import ACCOUNT_NAME,CONTAINER_NAME
+from pyspark.sql import functions as F
 
 
 spark = (SparkSession.builder 
@@ -22,6 +23,11 @@ products_df = (spark.read.format("csv")
 #se debarasser des duplicates si elle existe
 products_df = products_df.dropDuplicates()
 
+#####Ajouter ingestion_ts + extraire les colonnes de partition date_yyyy_mm_dd et hour pour les besoins d'audit
+products_df = products_df.withColumn(
+    "ingestion_ts", F.current_timestamp()
+)
+
 #crer la DB si elle n'existe pas 
 spark.sql("CREATE DATABASE IF NOT EXISTS hive_prod.db")
 
@@ -31,7 +37,8 @@ spark.sql("""
         id STRING,
         ean STRING,
         brand STRING,
-        description STRING
+        description STRING,
+        ingestion_ts TIMESTAMP
     )
     USING iceberg
 """)

@@ -19,9 +19,8 @@ logger = logging.getLogger("spark-warning")
 ###that would be the official
 today_str = datetime.today().strftime("%Y-%m-%d")
 
-
 #read transactions of the day from the shared storage
-transactions_full_path = list_matching_transaction_files_azure()
+transactions_full_path = list_matching_transaction_files_azure(date=today_str) #for production
 #transactions_full_path = list_matching_transaction_files_azure(date="2023-11-25") #for testing
 #transactions_full_path = list_matching_transaction_files_azure(date="2023-11-25",hour="8") # fir testing
 if not transactions_full_path:
